@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "experimentalDecorators": true
+    },
+    "include": [
+        "ts/*.ts"
+    ]   
+}

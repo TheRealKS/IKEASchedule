@@ -1,0 +1,45 @@
+{
+    "name": "IKEASchedule",
+    "short_name": "IKEASchedule",
+    "description": "View INJIXO schedule in native-like PWA",
+    "icons": [
+      {
+        "src": "icons/ldpi.png",
+        "sizes": "36x36",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/mdpi.png",
+        "sizes": "48x48",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/hdpi.png",
+        "sizes": "72x72",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/xhdpi.png",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/xxhdpi.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/xxxhdpi.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/xxxxhdpi.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "index.html",
+    "display": "fullscreen"
+  }
+  
