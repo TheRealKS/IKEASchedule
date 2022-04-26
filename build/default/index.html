@@ -8,62 +8,44 @@
     </head>
     <body>
         <div class="schedule_header">
-            <bx-btn icon_layout=""><span class="material-icons" slot="icon">arrow_back_ios</span></bx-btn>            
+            <bx-btn icon_layout="" id="back_week"><span class="material-icons" slot="icon">arrow_back_ios</span></bx-btn>            
             <div class="header_item current_date_holder">
-                <span class="current_date_range">25-04 / 01-05</span>
+                <span class="current_date_range" id="date_range">25-04 / 01-05</span>
             </div>
-            <bx-btn icon_layout=""><span class="material-icons" slot="icon">arrow_forward_ios</span></bx-btn>    
+            <bx-btn icon_layout="" id="forward_week"><span class="material-icons" slot="icon">arrow_forward_ios</span></bx-btn>    
         </div>
-        <div class="schedule_holder">
-            <div class="schedule_item">
-                <div class="schedule_item_header">&nbsp; Dinsdag 25-04</div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-            </div>
-            <div class="schedule_item">
-                <div class="schedule_item_header">&nbsp; Dinsdag 25-04</div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-            </div>
-            <div class="schedule_item">
-                <div class="schedule_item_header">&nbsp; Dinsdag 25-04</div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-                <div class="schedule_item_details">
-                    <span class="schedule_period">&nbsp; 18:00 - 19:00</span>
-                    <i class="schedule_activity">Herverpakken</i>
-                </div>
-            </div>
+        <div class="schedule_holder" id="schedule_holder">
+            <bx-loading></bx-loading>
         </div>
-        <div class="footer">
-            Ingelogd als: Koen Sauren - 05719033
-            <bx-btn>Uitloggen</bx-btn>
+        <div class="footer" id="footer">
+            <span id="logon_status">Niet ingelogd</span>
+            <bx-btn id="logoff_bttn" disabled="">Uitloggen</bx-btn>
         </div>
-    
+
+        <bx-modal id="modal-login">
+            <bx-modal-header>
+              <bx-modal-close-button></bx-modal-close-button>
+              <bx-modal-label>Inloggen</bx-modal-label>
+              <bx-modal-heading>Inloggen op INJIXO</bx-modal-heading>
+            </bx-modal-header>
+            <bx-modal-body id="modal-login-body">
+                <p>Om deze app te kunnen gebruiken, moet je je inloggegevens voor INJIXO doorgeven. Deze gegevens worden alleen opgeslagen op dit apparaat, en met niemand gedeeld.</p>
+                <bx-input required="" id="uname_field">
+                    <span slot="label-text">Gebruikersnaam</span>
+                    <span slot="helper-text">(Je personeelsnummer)</span>
+                    <span slot="validity-message">Something isn't right</span>
+                </bx-input>
+                <bx-input type="password" id="pwd_field" required="">
+                    <span slot="label-text">Wachtwoord</span>
+                    <span slot="validity-message">Something isn't right</span>
+                </bx-input>
+                <bx-inline-loading status="active" id="logon_spinner">Verwerken...</bx-inline-loading>
+            </bx-modal-body>
+            <bx-modal-footer>
+              <bx-modal-footer-button kind="secondary" data-modal-close="">Annuleren</bx-modal-footer-button>
+              <bx-modal-footer-button kind="primary" id="logon_btn">Inloggen</bx-modal-footer-button>
+            </bx-modal-footer>
+        </bx-modal>
+          
+     
 </body></html>

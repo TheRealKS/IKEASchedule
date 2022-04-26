@@ -68,7 +68,7 @@ window.onload = function () {
             goForwardWeek();
         });
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/serviceworker.js').then(() => {
+            navigator.serviceWorker.register('serviceworker.js').then(() => {
                 console.log('Service worker registered!');
             }).catch((error) => {
                 console.warn('Error registering service worker:');
