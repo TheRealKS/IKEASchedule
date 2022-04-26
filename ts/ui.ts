@@ -1,8 +1,14 @@
+import { getSchedule } from "./io";
 import { Activity, Schedule } from "./scheduleparser";
 import { ScheduleItem } from "./schedule_item";
 
 var schedule : Schedule;
 var currentStartDay : Date;
+
+export async function fetchScheduleAndInit(sid : string) {
+    let sched = await getSchedule(sid);
+    init_ui(sched);
+}
 
 export function init_ui(s : Schedule) {
     schedule = s;

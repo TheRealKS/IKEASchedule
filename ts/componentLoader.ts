@@ -3,46 +3,51 @@ import 'carbon-web-components/es/components/modal/index.js';
 import 'carbon-web-components/es/components/input/index.js';
 import 'carbon-web-components/es/components/inline-loading/index.js';
 import 'carbon-web-components/es/components/loading/index.js';
+import 'carbon-web-components/es/components/notification/index.js';
+
 import {default as PullToRefresh} from 'pulltorefreshjs/dist/index.esm.js' 
 
-import { obtainSessionID } from './io';
-import { get, set } from 'idb-keyval';
-import { parseSchedule } from './scheduleparser';
-import { generateScheduleEntry, goBackwardWeek, goForwardWeek, init_ui } from './ui';
+import { checkCredentials, getSchedule, obtainSessionID, renewSessionID, verifySessionID } from './io';
+import { get, set, clear } from 'idb-keyval';
+import { fetchScheduleAndInit, generateScheduleEntry, goBackwardWeek, goForwardWeek, init_ui } from './ui';
 
-window.onload = function() {
+window.onload = async function() {
     document.getElementById("logon_btn").addEventListener("click", async function () {
         let spinner = document.getElementById("logon_spinner");
         spinner.style.display = "block";
-        let pwd = document.getElementById("uname_field").value;
-        let uname = document.getElementById("pwd_field").value;
-        let sid = await obtainSessionID("05719033", "210501ko!!");
+        let uname = document.getElementById("uname_field").value;
+        let pwd = document.getElementById("pwd_field").value;
+        let sid = await obtainSessionID(uname, pwd);
         spinner.style.display = "none";
         if (sid.error) {
             document.getElementById("modal-login-body").innerHTML += "Niet goed";
         } else {
             set("sid", sid.id);
-            set("sid_data", Date.now());
+            set("sid_date", Date.now());
             set("uname", uname);
             set("pwd", pwd);
+            document.getElementById("logon_status").innerText = "Ingelogd als: " + uname;
+            document.getElementById("logoff_bttn").disabled = false;
+            await fetchScheduleAndInit(sid.id);
             document.getElementById("modal-login").open = false;
         }
     });
 
-    fetch("schedule.html").then(res => res.text()).then(res => {
-        let schedule = parseSchedule(res);
-
-        setTimeout(function() {init_ui(schedule);}, 5000);
+    document.getElementById("logoff_bttn").addEventListener("click", () => {
+        clear();
+        window.location.reload();
     });
 
     const ptr = PullToRefresh.init({
         mainElement: '#schedule_holder',
         async onRefresh() {
-            let res = await fetch("schedule.html");
-            let a = await res.text();
-            document.getElementById("schedule_holder").innerHTML = "";
-            let schedule = parseSchedule(a);
-            init_ui(schedule);
+            if (await renewSessionID()) {
+                let newsid = await get("sid");
+                document.getElementById("schedule_holder").innerHTML = "";
+                await fetchScheduleAndInit(newsid);
+            } else {
+                document.getElementById("modal-login").open = true;
+            }
         }
     }); 
 
@@ -53,4 +58,39 @@ window.onload = function() {
     document.getElementById("forward_week").addEventListener("click", () => {
         goForwardWeek();
     });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceworker.js').then(() => {
+          console.log('Service worker registered!');
+        }).catch((error) => {
+          console.warn('Error registering service worker:');
+          console.warn(error);
+        });
+    }
+    if (!navigator.onLine) {
+        let toast = document.createElement("bx-toast-notification")
+        toast.style.minWidth = "30rem";
+        toast.style.marginBottom = "0.5rem";
+        toast.style.position = "absolute";
+        toast.setAttribute("title", "Offline");
+        toast.setAttribute("subtitle", "Je bent offline. Het weergegeven rooster is misschien de laatste versie.");
+        toast.setAttribute("kind", "error");
+        toast.setAttribute("timeout", "undefined");
+        document.body.insertBefore(toast, document.body.children[1]);
+    }
+
+    let creds = await checkCredentials();
+    if (!creds) {
+        document.getElementById("modal-login").open = true;
+    } else {
+        document.getElementById("logon_status").innerText = "Ingelogd als: " + creds.uname;
+        document.getElementById("logoff_bttn").disabled = false;
+        if (await(verifySessionID())) {
+            let sid = await get("sid");
+            await fetchScheduleAndInit(sid);
+        } else {
+            let newsid = await get("sid");
+            await fetchScheduleAndInit(newsid);
+        }
+    }
 }

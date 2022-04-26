@@ -15,6 +15,11 @@ export function parseSchedule(rawhtml : string) : Schedule {
     var parser = new DOMParser();
     var doc = parser.parseFromString(rawhtml, 'text/html');
 
+    //Check if it's a valid doc
+    if (doc.head.title != "") {
+        throw "Invalid schedule";
+    }
+
     //Get elements most likely to be schedule entries and filter them to actual schedule entries
     let candidates = doc.getElementsByClassName("bar");
     let scheduleentries : Array<Element> = [];
