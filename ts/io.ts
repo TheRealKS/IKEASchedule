@@ -1,6 +1,7 @@
 import { parseSchedule, Schedule } from "./scheduleparser";
 import { get, set, update } from 'idb-keyval';
 
+const SERVER = "http://localhost/test";
 
 interface SessionID {
     error: boolean,
@@ -8,7 +9,7 @@ interface SessionID {
 }
 
 export async function obtainSessionID(userid : String, pwd : String) : Promise<SessionID> {
-    let result = await fetch("http://localhost/test/logon.php?pwd=" + pwd + "&name=" + userid);
+    let result = await fetch(SERVER + "/logon.php?pwd=" + pwd + "&name=" + userid);
     try {
         let serverreturn = await result.text();
         if (serverreturn.includes("Error 403")) {
@@ -24,7 +25,7 @@ export async function obtainSessionID(userid : String, pwd : String) : Promise<S
 }
 
 export async function getSchedule(sid : String) : Promise<Schedule> {
-    let raw = await(fetch("http://localhost/test/schedule.php?sid=" + sid));
+    let raw = await(fetch(SERVER + "/schedule.php?sid=" + sid));
     try {
         let serverreturn = await raw.text();
         return parseSchedule(serverreturn);

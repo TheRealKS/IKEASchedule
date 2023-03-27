@@ -16,42 +16,49 @@ self.addEventListener("install", (event) => {
     const cache = await caches.open("v1");
     await cache.put(request, response);
   };
+
+  const deleteFromCache = async (request) => {
+    const cache = await caches.open("v1");
+    await cache.delete(request);
+  }
   
-  const cacheFirst = async ({ request, preloadResponsePromise, fallbackUrl }) => {
-    // First try to get the resource from the cache
-    const responseFromCache = await caches.match(request);
-    if (responseFromCache) {
-      return responseFromCache;
-    }
-  
-    // Next try to get the resource from the network
+  const requestFromNetwork = async (request) => {
     try {
       const responseFromNetwork = await fetch(request);
-      // response may be used only once
-      // we need to save clone to put one copy in cache
-      // and serve second one
       putInCache(request, responseFromNetwork.clone());
       return responseFromNetwork;
     } catch (error) {
-      const fallbackResponse = await caches.match(fallbackUrl);
-      if (fallbackResponse) {
-        return fallbackResponse;
-      }
-      // when even the fallback response is not available,
-      // there is nothing we can do, but we must always
-      // return a Response object
       return new Response('Network error happened', {
         status: 408,
         headers: { 'Content-Type': 'text/plain' },
       });
     }
+  }
+
+  const cacheFirst = async ({ request }) => {
+    //Get the resource from cache
+    const responseFromCache = await caches.match(request);
+    if (responseFromCache) {
+      //If we are getting the schedule, check the age of the cached request
+      let parsedDate = new Date(responseFromCache.headers.get("Date"));
+      if (Math.abs(new Date() - parsedDate) > 3600000) {
+        //Older than 1 hour
+        let newResponse = await requestFromNetwork(request);
+        if (newResponse.status != 408) {
+          await deleteFromCache(request);
+          return newResponse;
+        }
+      }
+      return responseFromCache;
+    }
+
+    return requestFromNetwork(request);
   };
   
   self.addEventListener("fetch", (event) => {
     event.respondWith(
       cacheFirst({
-        request: event.request,
-        fallbackUrl: "/sw-test/gallery/myLittleVader.jpg",
+        request: event.request
       })
     );
   });
